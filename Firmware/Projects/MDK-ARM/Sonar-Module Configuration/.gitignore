@@ -1,0 +1,10 @@
+*.tmp
+*.bak
+*.o
+*.map
+*.d
+*.lnp
+*.crf
+
+
+

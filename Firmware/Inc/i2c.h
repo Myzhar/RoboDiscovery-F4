@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : I2C.h
-  * Date               : 01/06/2014 10:34:33
+  * Date               : 28/06/2014 15:44:09
   * Description        : This file provides code for the configuration
   *                      of the I2C instances.
   ******************************************************************************
@@ -40,7 +40,7 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal_conf.h"
+#include "stm32f4xx_hal.h"
 
 extern I2C_HandleTypeDef hi2c2;
 

@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file           : USB_DEVICE
-  * @date           : 01/06/2014 10:34:33  
+  * @date           : 28/06/2014 15:44:10  
   * @version        : v1.0_Cube
   * @brief          : This file implements the USB Device 
   ******************************************************************************
@@ -52,7 +52,7 @@ void MX_USB_DEVICE_Init(void)
 
   USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC);
 
-  USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops);
+  USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS);
 
   USBD_Start(&hUsbDeviceFS);
 

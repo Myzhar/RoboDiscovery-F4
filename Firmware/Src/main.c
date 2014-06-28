@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 01/06/2014 10:34:34
+  * Date               : 28/06/2014 15:44:11
   * Description        : Main program body
   ******************************************************************************
   *
@@ -44,11 +44,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN 0 */
-
+#include "leds_handler.h"
 /* USER CODE END 0 */
 
 /* Private function prototypes -----------------------------------------------*/
-static void SystemClock_Config(void);
+void SystemClock_Config(void);
 
 int main(void)
 {
@@ -65,6 +65,11 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  /* System interrupt init*/
+  /* Sets the priority grouping field */
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
@@ -79,25 +84,30 @@ int main(void)
   MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin( GPIOD, GPIO_PIN_12, GPIO_PIN_SET );
-  HAL_GPIO_WritePin( GPIOD, GPIO_PIN_14, GPIO_PIN_SET );
-  HAL_TIM_IC_Start_IT( &htim12, TIM_CHANNEL_2 );
-  HAL_TIM_IC_Start_IT( &htim9, TIM_CHANNEL_2 );
-  HAL_TIM_IC_Start_IT( &htim2, TIM_CHANNEL_2 );
-  HAL_TIM_IC_Start_IT( &htim3, TIM_CHANNEL_2 );
+	uint8_t led_idx = 0;
+	uint8_t color_idx = 0;
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
-  /* Infinite loop */
+  /* Infinite loop */	
   while (1)
   {
-	  HAL_GPIO_TogglePin( GPIOD, GPIO_PIN_12 );
-	  HAL_TIM_PWM_Start( &htim13, TIM_CHANNEL_1 );
-	  HAL_TIM_PWM_Start( &htim14, TIM_CHANNEL_1 );
-	  HAL_TIM_PWM_Start( &htim11, TIM_CHANNEL_1 );
-	  HAL_TIM_PWM_Start( &htim10, TIM_CHANNEL_1 );
-	  
-	  HAL_Delay( 100 );	  
+		if( led_idx == 15 )
+		{
+			led_idx = 0;
+			color_idx++;
+			
+			if(color_idx>LED_BLACK)
+				color_idx = 0;
+		}
+		
+		setStateLedColor( led_idx, color_idx );
+		led_idx++;
+		
+		// Toggle Blue Led on discovery
+		toggleLedDiscBlue();
+		
+	  HAL_Delay( 50 );
   }
   /* USER CODE END 3 */
 
@@ -105,7 +115,7 @@ int main(void)
 
 /** System Clock Configuration
 */
-static void SystemClock_Config(void)
+void SystemClock_Config(void)
 {
 
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -158,8 +168,10 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
    */
 void assert_failed(uint8_t* file, uint32_t line)
 {
-  /* User can add his own implementation to report the file name and line number,
-    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE BEGIN 6 */
+/* User can add his own implementation to report the file name and line number,
+ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
 
 }
 

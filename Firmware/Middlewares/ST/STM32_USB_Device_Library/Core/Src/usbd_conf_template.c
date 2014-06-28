@@ -1,10 +1,12 @@
 /**
   ******************************************************************************
-  * @file    usbd_storage_template.c
+  * @file    usbd_conf_template.c
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    18-February-2014
-  * @brief   Memory management layer
+  * @version V2.2.0
+  * @date    13-June-2014
+  * @brief   USB Device configuration and interface file
+  *          This template should be copied to the user folder, renamed and customized
+  *          following user needs.  
   ******************************************************************************
   * @attention
   *
@@ -26,233 +28,185 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
-#include "usbd_storage.h"
-
-
-/** @addtogroup STM32_USBD_DEVICE_LIBRARY
-* @{
-*/
-
-
-/** @defgroup USBD_STORAGE 
-* @brief usbd core module
-* @{
-*/ 
-
-/** @defgroup USBD_STORAGE_Private_TypesDefinitions
-* @{
-*/ 
+#include "usbd_core.h"
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
 /**
-* @}
-*/ 
-
-
-/** @defgroup USBD_STORAGE_Private_Defines
-* @{
-*/ 
-#define STORAGE_LUN_NBR                  1  
-#define STORAGE_BLK_NBR                  0x10000  
-#define STORAGE_BLK_SIZ                  0x200
-/**
-* @}
-*/ 
-
-
-/** @defgroup USBD_STORAGE_Private_Macros
-* @{
-*/ 
-/**
-* @}
-*/ 
-
-
-
-
-/** @defgroup USBD_STORAGE_Private_FunctionPrototypes
-* @{
-*/ 
-
-/**
-* @}
-*/ 
-
-
-/** @defgroup USBD_STORAGE_Private_Functions
-* @{
-*/ 
-
-int8_t STORAGE_Init (uint8_t lun);
-
-int8_t STORAGE_GetCapacity (uint8_t lun, 
-                           uint32_t *block_num, 
-                           uint16_t *block_size);
-
-int8_t  STORAGE_IsReady (uint8_t lun);
-
-int8_t  STORAGE_IsWriteProtected (uint8_t lun);
-
-int8_t STORAGE_Read (uint8_t lun, 
-                        uint8_t *buf, 
-                        uint32_t blk_addr,
-                        uint16_t blk_len);
-
-int8_t STORAGE_Write (uint8_t lun, 
-                        uint8_t *buf, 
-                        uint32_t blk_addr,
-                        uint16_t blk_len);
-
-int8_t STORAGE_GetMaxLun (void);
-
-/** @defgroup USBD_STORAGE_Private_Variables
-* @{
-*/ 
-
-/* USB Mass storage Standard Inquiry Data */
-int8_t  STORAGE_Inquirydata[] = {//36
-  
-  /* LUN 0 */
-  0x00,		
-  0x80,		
-  0x02,		
-  0x02,
-  (STANDARD_INQUIRY_DATA_LEN - 5),
-  0x00,
-  0x00,	
-  0x00,
-  'S', 'T', 'M', ' ', ' ', ' ', ' ', ' ', /* Manufacturer : 8 bytes */
-  'P', 'r', 'o', 'd', 'u', 'c', 't', ' ', /* Product      : 16 Bytes */
-  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-  '0', '.', '0' ,'1',                     /* Version      : 4 Bytes */
-}; 
-
-USBD_StorageTypeDef USBD_MSD_fops =
-{
-  STORAGE_Init,
-  STORAGE_GetCapacity,
-  STORAGE_IsReady,
-  STORAGE_IsWriteProtected,
-  STORAGE_Read,
-  STORAGE_Write,
-  STORAGE_GetMaxLun,
-  STORAGE_Inquirydata,
-  
-};
-/**
-  * @}
-  */ 
-
-/** @defgroup USBD_CORE_Private_Functions
-  * @{
-  */ 
-
-/**
-  * @brief  STORAGE_Init
-  *         Initailizes the storage unit (medium)
-  * @param  lun: logical unit number
-  * @retval status (0 : Ok / -1 : Error)
+  * @brief  Initializes the Low Level portion of the Device driver.
+  * @param  pdev: Device handle
+  * @retval USBD Status
   */
-
-int8_t STORAGE_Init (uint8_t lun)
-{
-  return (0);
+USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
+{    
+  return USBD_OK;
 }
 
 /**
-  * @brief  STORAGE_GetCapacity
-  *         return medium capacity
-  * @param  lun: logical unit number
-  * @param  block_num: number of total block number
-  * @param  block_size: block size
-  * @retval status (0 : Ok / -1 : Error)
+  * @brief  De-Initializes the Low Level portion of the Device driver.
+  * @param  pdev: Device handle
+  * @retval USBD Status
   */
-int8_t STORAGE_GetCapacity (uint8_t lun, uint32_t *block_num, uint16_t *block_size)
+USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *pdev)
 {
-  
-  *block_num  = STORAGE_BLK_NBR - 1;
-  *block_size = STORAGE_BLK_SIZ;
-  
-  return (0);
+  return USBD_OK;
 }
 
 /**
-  * @brief  STORAGE_IsReady
-  *         check whether the medium is ready
-  * @param  lun: logical unit number
-  * @retval status (0 : Ok / -1 : Error)
+  * @brief  Starts the Low Level portion of the Device driver. 
+  * @param  pdev: Device handle
+  * @retval USBD Status
   */
-int8_t  STORAGE_IsReady (uint8_t lun)
+USBD_StatusTypeDef USBD_LL_Start(USBD_HandleTypeDef *pdev)
 {
-
-    return (0);
+  return USBD_OK;
 }
 
 /**
-  * @brief  STORAGE_IsWriteProtected
-  *         check whether the medium is write protected
-  * @param  lun: logical unit number
-  * @retval status (0 : write enabled / -1 : otherwise)
+  * @brief  Stops the Low Level portion of the Device driver.
+  * @param  pdev: Device handle
+  * @retval USBD Status
   */
-int8_t  STORAGE_IsWriteProtected (uint8_t lun)
+USBD_StatusTypeDef USBD_LL_Stop(USBD_HandleTypeDef *pdev)
 {
-  return  0;
+  return USBD_OK;
 }
 
 /**
-  * @brief  STORAGE_Read
-  *         Read data from the medium
-  * @param  lun: logical unit number
-  * @param  blk_addr: logical block address
-  * @param  blk_len: blocks number
-  * @retval status (0 : Ok / -1 : Error)
+  * @brief  Opens an endpoint of the Low Level Driver.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @param  ep_type: Endpoint Type
+  * @param  ep_mps: Endpoint Max Packet Size
+  * @retval USBD Status
   */
-int8_t STORAGE_Read (uint8_t lun, 
-                 uint8_t *buf, 
-                 uint32_t blk_addr,                       
-                 uint16_t blk_len)
+USBD_StatusTypeDef USBD_LL_OpenEP(USBD_HandleTypeDef *pdev,
+                                  uint8_t ep_addr,
+                                  uint8_t ep_type,
+                                  uint16_t ep_mps)
 {
-  return (0);
+  return USBD_OK;
 }
 
 /**
-  * @brief  STORAGE_Write
-  *         Write data into the medium
-  * @param  lun: logical unit number
-  * @param  blk_addr: logical block address
-  * @param  blk_len: blocks number
-  * @retval status (0 : Ok / -1 : Error)
+  * @brief  Closes an endpoint of the Low Level Driver.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @retval USBD Status
   */
-int8_t STORAGE_Write (uint8_t lun, 
-                  uint8_t *buf, 
-                  uint32_t blk_addr,
-                  uint16_t blk_len)
+USBD_StatusTypeDef USBD_LL_CloseEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 {
-  return (0);
+  return USBD_OK;
 }
 
-
 /**
-  * @brief  STORAGE_GetMaxLun
-  *         return the Max Supported LUNs
-  * @param  none
-  * @retval lun(s) number
+  * @brief  Flushes an endpoint of the Low Level Driver.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @retval USBD Status
   */
-int8_t STORAGE_GetMaxLun (void)
+USBD_StatusTypeDef USBD_LL_FlushEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 {
-  return (STORAGE_LUN_NBR - 1);
+  return USBD_OK;
 }
-/**
-* @}
-*/ 
-
 
 /**
-* @}
-*/ 
-
+  * @brief  Sets a Stall condition on an endpoint of the Low Level Driver.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @retval USBD Status
+  */
+USBD_StatusTypeDef USBD_LL_StallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
+{
+  return USBD_OK;
+}
 
 /**
-* @}
-*/ 
+  * @brief  Clears a Stall condition on an endpoint of the Low Level Driver.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @retval USBD Status
+  */
+USBD_StatusTypeDef USBD_LL_ClearStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
+{
+  return USBD_OK; 
+}
 
+/**
+  * @brief  Returns Stall condition.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @retval Stall (1: Yes, 0: No)
+  */
+uint8_t USBD_LL_IsStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
+{
+   return 0;
+}
+
+/**
+  * @brief  Assigns a USB address to the device.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @retval USBD Status
+  */
+USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_addr)
+{
+  return USBD_OK; 
+}
+
+/**
+  * @brief  Transmits data over an endpoint.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @param  pbuf: Pointer to data to be sent
+  * @param  size: Data size    
+  * @retval USBD Status
+  */
+USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, 
+                                    uint8_t ep_addr,
+                                    uint8_t *pbuf,
+                                    uint16_t size)
+{
+  return USBD_OK;
+}
+
+/**
+  * @brief  Prepares an endpoint for reception.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @param  pbuf: Pointer to data to be received
+  * @param  size: Data size
+  * @retval USBD Status
+  */
+USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *pdev, 
+                                          uint8_t ep_addr,
+                                          uint8_t *pbuf,
+                                          uint16_t size)
+{
+  return USBD_OK;
+}
+
+/**
+  * @brief  Returns the last transfered packet size.
+  * @param  pdev: Device handle
+  * @param  ep_addr: Endpoint Number
+  * @retval Recived Data Size
+  */
+uint32_t USBD_LL_GetRxDataSize(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
+{
+  return 0;
+}
+
+/**
+  * @brief  Delays routine for the USB Device Library.
+  * @param  Delay: Delay in ms
+  * @retval None
+  */
+void USBD_LL_Delay(uint32_t Delay)
+{
+}
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

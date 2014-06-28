@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    usbd_cdc_if_template.h
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    18-February-2014
+  * @version V2.2.0
+  * @date    13-June-2014
   * @brief   Header for dfu_mal.c file.
   ******************************************************************************
   * @attention
