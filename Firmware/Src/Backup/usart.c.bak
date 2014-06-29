@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : USART.c
-  * Date               : 28/06/2014 15:25:45
+  * Date               : 29/06/2014 17:37:38
   * Description        : This file provides code for the configuration
   *                      of the USART instances.
   ******************************************************************************
@@ -133,6 +133,11 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 
     __HAL_LINKDMA(huart,hdmatx,hdma_usart1_tx);
 
+    /* Peripheral interrupt init*/
+    /* Sets the priority grouping field */
+    HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
+    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
   }
   else if(huart->Instance==USART2)
   {
@@ -205,6 +210,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     /* Peripheral DMA DeInit*/
     HAL_DMA_DeInit(huart->hdmarx);
     HAL_DMA_DeInit(huart->hdmatx);
+
+    /* Peripheral interrupt Deinit*/
+    HAL_NVIC_DisableIRQ(USART1_IRQn);
   }
   else if(huart->Instance==USART2)
   {

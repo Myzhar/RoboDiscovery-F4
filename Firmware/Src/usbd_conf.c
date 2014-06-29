@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file           : usbd_conf.c
-  * @date           : 28/06/2014 15:44:10   
+  * @date           : 29/06/2014 18:03:43   
   * @version        : v1.0_Cube
   * @brief          : This file implements the board support package for the USB device library
   ******************************************************************************

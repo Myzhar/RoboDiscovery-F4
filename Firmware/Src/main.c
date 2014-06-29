@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 28/06/2014 15:44:11
+  * Date               : 29/06/2014 18:03:44
   * Description        : Main program body
   ******************************************************************************
   *
@@ -86,6 +86,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	uint8_t led_idx = 0;
 	uint8_t color_idx = 0;
+	
+	initRgbLeds();
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
@@ -99,6 +101,8 @@ int main(void)
 			
 			if(color_idx>LED_BLACK)
 				color_idx = 0;
+			
+			initRgbLeds(); // Turn off all RGB Leds
 		}
 		
 		setStateLedColor( led_idx, color_idx );
