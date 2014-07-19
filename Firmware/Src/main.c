@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 29/06/2014 18:03:44
+  * Date               : 19/07/2014 11:48:45
   * Description        : Main program body
   ******************************************************************************
   *
@@ -44,7 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN 0 */
-#include "leds_handler.h"
+	#include "leds_handler.h"
 /* USER CODE END 0 */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,6 +77,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM7_Init();
   MX_TIM11_Init();
   MX_TIM12_Init();
   MX_USART1_UART_Init();
@@ -84,35 +85,36 @@ int main(void)
   MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 2 */
-	uint8_t led_idx = 0;
-	uint8_t color_idx = 0;
-	
-	initRgbLeds();
+		volatile uint8_t led_idx = 0;
+		volatile uint8_t color_idx = 0;
+		volatile uint8_t change = 0;
+		
+		resetRgbLeds();
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
-  /* Infinite loop */	
-  while (1)
-  {
-		if( led_idx == 15 )
+		/* Infinite loop */	
+		while (1)
 		{
-			led_idx = 0;
-			color_idx++;
 			
-			if(color_idx>LED_BLACK)
-				color_idx = 0;
+			HAL_Delay(5);	
+			for(int i=0; i<16; i++)
+			{
+				setStateLedColor( i, color_idx );
+				HAL_Delay(1);	
+				resetRgbLeds();
+			}
 			
-			initRgbLeds(); // Turn off all RGB Leds
+			change++;
+			if(change==20) 
+			{
+				color_idx++;
+				if(color_idx==LED_BLACK)
+					color_idx = LED_RED;
+				change = 0;
+				
+			}			
 		}
-		
-		setStateLedColor( led_idx, color_idx );
-		led_idx++;
-		
-		// Toggle Blue Led on discovery
-		toggleLedDiscBlue();
-		
-	  HAL_Delay( 50 );
-  }
   /* USER CODE END 3 */
 
 }
@@ -150,14 +152,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-uint32_t ic_val;
-uint32_t range_mm; 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-	ic_val = HAL_TIM_ReadCapturedValue( htim, TIM_CHANNEL_2 );	
-	range_mm = (int)((float)ic_val*0.175f+0.5f);
-	HAL_GPIO_TogglePin( GPIOD, GPIO_PIN_14 );
-}
+	uint32_t ic_val;
+	uint32_t range_mm; 
+	void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+	{
+		ic_val = HAL_TIM_ReadCapturedValue( htim, TIM_CHANNEL_2 );	
+		range_mm = (int)((float)ic_val*0.175f+0.5f);
+		HAL_GPIO_TogglePin( GPIOD, GPIO_PIN_14 );
+	}
 
 /* USER CODE END 4 */
 

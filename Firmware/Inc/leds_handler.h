@@ -3,6 +3,8 @@
 
 #include "gpio.h"
 
+#define MAX_LED_COUNT 16
+
 #define LED_ON 	0
 #define LED_OFF 1
 
@@ -15,8 +17,14 @@
 #define LED_WHITE		6
 #define LED_BLACK		7
 
-// Initialize RGB Leds turning all off
+// Initialize RGB Leds 
 void initRgbLeds( void );
+
+// Turn all RGB leds off
+inline void resetRgbLeds( void );
+
+// RGB Leds timer timeout
+void on_RGB_led_timer_timeout( void );
 
 // Sets the state of the Red Led on Discovery Board
 void setLedDiscRed( uint8_t state );
