@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : TIM.c
-  * Date               : 19/07/2014 11:48:43
+  * Date               : 20/08/2014 19:06:50
   * Description        : This file provides code for the configuration
   *                      of the TIM instances.
   ******************************************************************************
@@ -155,7 +155,7 @@ void MX_TIM7_Init(void)
   htim7.Instance = TIM7;
   htim7.Init.Prescaler = 84;
   htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim7.Init.Period = 4;
+  htim7.Init.Period = 100;
   HAL_TIM_Base_Init(&htim7);
 
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;

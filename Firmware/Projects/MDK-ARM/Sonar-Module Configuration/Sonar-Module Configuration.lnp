@@ -1,5 +1,4 @@
 --cpu Cortex-M4.fp
-"sonar-module configuration\startup_stm32f407xx.o"
 "sonar-module configuration\dma.o"
 "sonar-module configuration\gpio.o"
 "sonar-module configuration\i2c.o"
@@ -13,7 +12,9 @@
 "sonar-module configuration\usbd_desc.o"
 "sonar-module configuration\leds_handler.o"
 "sonar-module configuration\tim_handler.o"
+"sonar-module configuration\button_handler.o"
 "sonar-module configuration\system_stm32f4xx.o"
+"sonar-module configuration\startup_stm32f407xx.o"
 "sonar-module configuration\stm32f4xx_hal.o"
 "sonar-module configuration\stm32f4xx_hal_cortex.o"
 "sonar-module configuration\stm32f4xx_hal_dma.o"

@@ -8,14 +8,24 @@
 #define LED_ON 	0
 #define LED_OFF 1
 
-#define LED_RED			0
-#define LED_GREEN		1
-#define LED_BLUE		2
-#define LED_YELLOW	3
-#define LED_PURPLE	4
-#define LED_CYAN		5
-#define LED_WHITE		6
-#define LED_BLACK		7
+typedef struct _led_color
+{
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
+} LedColor;
+
+#define LED_BLACK		LedColor(0,0,0)
+#define LED_RED			LedColor(255,0,0)
+#define LED_GREEN		LedColor(0,255,0)
+#define LED_BLUE		LedColor(0,0,255)
+#define LED_YELLOW	LedColor(255,255,0)
+#define LED_PURPLE	LedColor(255,0,255)
+#define LED_CYAN		LedColor(0,255,255)
+#define LED_WHITE		LedColor(255,255,255)
+
+
+
 
 // Initialize RGB Leds 
 void initRgbLeds( void );
@@ -39,6 +49,9 @@ void setLedDiscBlue( uint8_t state );
 void toggleLedDiscBlue( void );
 
 // Sets the state of one of the 16 RGB Leds on the RoboDiscovery
-void setStateLedColor( uint8_t ledIdx, uint8_t color );
+//void setStateLedColor( uint8_t ledIdx, uint8_t color );
+
+// Sets the color of a LED
+void setLedColor( uint8_t ledIdx, LedColor color );
 
 #endif

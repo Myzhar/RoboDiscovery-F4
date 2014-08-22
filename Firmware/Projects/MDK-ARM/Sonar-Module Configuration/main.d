@@ -44,3 +44,4 @@ sonar-module configuration\main.o: C:\Keil_v5\ARM\ARMCC\bin\..\include\string.h
 sonar-module configuration\main.o: ..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_def.h
 sonar-module configuration\main.o: ..\..\Inc\gpio.h
 sonar-module configuration\main.o: ..\..\Inc\leds_handler.h
+sonar-module configuration\main.o: ..\..\Inc\button_handler.h

@@ -47,7 +47,7 @@ void initRgbLeds( void )
 	HAL_TIM_Base_Start_IT( &htim7 );
 }
 
-inline void resetRgbLeds(void)
+void resetRgbLeds(void)
 {	
 	// All the leds (included the 4 on Discovery Board) are on PORTD
 	HAL_GPIO_WritePin( GPIOD, KLED_1, GPIO_PIN_RESET );

@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 19/07/2014 11:48:45
+  * Date               : 20/08/2014 19:06:51
   * Description        : Main program body
   ******************************************************************************
   *
@@ -44,7 +44,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN 0 */
-	#include "leds_handler.h"
+#include "leds_handler.h"
+#include "button_handler.h"	
 /* USER CODE END 0 */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -52,7 +53,6 @@ void SystemClock_Config(void);
 
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -80,41 +80,129 @@ int main(void)
   MX_TIM7_Init();
   MX_TIM11_Init();
   MX_TIM12_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
-  MX_USB_DEVICE_Init();
+  //MX_USART1_UART_Init();
+  //MX_USART2_UART_Init();
+  //MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 2 */
-		volatile uint8_t led_idx = 0;
-		volatile uint8_t color_idx = 0;
-		volatile uint8_t change = 0;
+	volatile uint8_t led_idx = 0;
+	volatile uint8_t color_idx = 0;
 		
-		resetRgbLeds();
+	volatile uint8_t but1_count = 0;
+	volatile uint8_t but2_count = 0;
+	volatile uint8_t but_disc_count = 0;
+	
+	volatile LedColor color;
+		
+	initRgbLeds();	
   /* USER CODE END 2 */
 
-  /* USER CODE BEGIN 3 */
-		/* Infinite loop */	
-		while (1)
+  /* USER CODE BEGIN 3 */	
+	/* Infinite loop */	
+	while (1)
+	{			
+		uint8_t set = 0;
+		
+		if( getButton1State() == BUT_PRESSED )
+			but1_count++;
+		else
+			but1_count = 0;
+		
+		if( getButton2State() == BUT_PRESSED )
+			but2_count++;
+		else
+			but2_count = 0;
+		
+		if( getButtonDiscState() == BUT_PRESSED )
+			but_disc_count++;
+		else
+			but_disc_count = 0;
+		
+		if( but1_count==3 )
 		{
+			but1_count = 0;
 			
-			HAL_Delay(5);	
-			for(int i=0; i<16; i++)
-			{
-				setStateLedColor( i, color_idx );
-				HAL_Delay(1);	
-				resetRgbLeds();
-			}
+			led_idx++;
+			if( led_idx ==16 )
+				led_idx=0;
 			
-			change++;
-			if(change==20) 
-			{
-				color_idx++;
-				if(color_idx==LED_BLACK)
-					color_idx = LED_RED;
-				change = 0;
-				
-			}			
+			set = 1;
 		}
+		
+		if( but2_count==3 )
+		{
+			but2_count = 0;
+			
+			color_idx++;
+			if( color_idx > 7 )
+				color_idx=0;
+			
+			switch(color_idx)
+			{
+				case 0:
+					color.R = 0;
+					color.G = 0;
+					color.B = 0;
+					break;
+				case 1:
+					color.R = 255;
+					color.G = 0;
+					color.B = 0;
+					break;
+				case 2:
+					color.R = 0;
+					color.G = 255;
+					color.B = 0;
+					break;
+				case 3:
+					color.R = 0;
+					color.G = 0;
+					color.B = 255;
+					break;
+				case 4:
+					color.R = 0;
+					color.G = 255;
+					color.B = 255;
+					break;
+				case 5:
+					color.R = 255;
+					color.G = 255;
+					color.B = 0;
+					break;
+				case 6:
+					color.R = 255;
+					color.G = 0;
+					color.B = 255;
+					break;
+				case 7:
+					color.R = 255;
+					color.G = 255;
+					color.B = 255;
+					break;
+			}
+
+			set = 1;
+		}			
+		
+		if( set==1 )
+		{
+			for( int i=0; i<16; i++ )
+			{
+				if( i==led_idx)
+					setLedColor( i, color );
+				else
+				{
+					LedColor black;
+					black.R = 0;
+					black.G = 0;
+					black.B = 0;
+					setLedColor( i, black );
+				}
+			}
+		}
+		
+		HAL_Delay(50);	
+	}
   /* USER CODE END 3 */
 
 }
@@ -152,14 +240,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-	uint32_t ic_val;
+/*	uint32_t ic_val;
 	uint32_t range_mm; 
 	void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	{
 		ic_val = HAL_TIM_ReadCapturedValue( htim, TIM_CHANNEL_2 );	
 		range_mm = (int)((float)ic_val*0.175f+0.5f);
 		HAL_GPIO_TogglePin( GPIOD, GPIO_PIN_14 );
-	}
+	}*/
 
 /* USER CODE END 4 */
 

@@ -6,7 +6,9 @@
 //        decreased. If the value is zero the led is off.
 //        Each update cycle lasts 256 counts, for 256 levels of light of each led
 
-static uint8_t led_upd_count;
+static uint8_t led_upd_count = 0;
+static uint8_t cycle = 0;
+static uint8_t tr_idx = 0;
 
 static uint8_t led_R_vals[MAX_LED_COUNT]; // Contains the R value for each led
 static uint8_t led_G_vals[MAX_LED_COUNT]; // Contains the G value for each led
@@ -17,11 +19,15 @@ static uint8_t upd_led_G_vals[MAX_LED_COUNT]; // Contains the status of each G l
 static uint8_t upd_led_B_vals[MAX_LED_COUNT]; // Contains the status of each B led. If not zero the led is ON
 // <<<<< Values to update the color of the leds 
 
+#define COL_MIN_RNG 50
+#define COL_MAX_RNG 150
+
+
 #define TR_S1_R GPIO_PIN_0
 #define TR_S1_G GPIO_PIN_1
 #define TR_S1_B GPIO_PIN_2
 #define TR_S2_R GPIO_PIN_3
-#define TR_S2_G GPIO_PIN_4
+#define TR_S2_G GPIO_PIN_8 // Note TR_S2_GREEN is not on Port D, but on Port B!!!
 #define TR_S2_B GPIO_PIN_5
 
 #define KLED_1 GPIO_PIN_6
@@ -32,6 +38,10 @@ static uint8_t upd_led_B_vals[MAX_LED_COUNT]; // Contains the status of each B l
 #define KLED_6 GPIO_PIN_11
 #define KLED_7 GPIO_PIN_12
 #define KLED_8 GPIO_PIN_13
+
+// >>>>> Private Functions
+void setK_pinState( uint8_t k_idx, uint8_t state );
+// <<<<< Private Functions
 
 void initRgbLeds( void )
 {
@@ -49,7 +59,12 @@ void initRgbLeds( void )
 
 void resetRgbLeds(void)
 {	
-	// All the leds (included the 4 on Discovery Board) are on PORTD
+	HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( GPIOB, TR_S2_G, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_SET );
 	HAL_GPIO_WritePin( GPIOD, KLED_1, GPIO_PIN_RESET );
 	HAL_GPIO_WritePin( GPIOD, KLED_2, GPIO_PIN_RESET );
 	HAL_GPIO_WritePin( GPIOD, KLED_3, GPIO_PIN_RESET );
@@ -57,13 +72,7 @@ void resetRgbLeds(void)
 	HAL_GPIO_WritePin( GPIOD, KLED_5, GPIO_PIN_RESET );
 	HAL_GPIO_WritePin( GPIOD, KLED_6, GPIO_PIN_RESET );
 	HAL_GPIO_WritePin( GPIOD, KLED_7, GPIO_PIN_RESET );
-	HAL_GPIO_WritePin( GPIOD, KLED_8, GPIO_PIN_RESET );
-	HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_SET );
-	HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_SET );
-	HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_SET );
-	HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_SET );
-	HAL_GPIO_WritePin( GPIOD, TR_S2_G, GPIO_PIN_SET );
-	HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_SET );
+	HAL_GPIO_WritePin( GPIOD, KLED_8, GPIO_PIN_RESET );	
 }
 
 void setLedDiscRed( uint8_t state )
@@ -92,156 +101,46 @@ void toggleLedDiscBlue( void )
 	GPIOD->ODR ^= GPIO_PIN_15;
 }
 
-void setStateLedColor( uint8_t ledIdx, uint8_t color )
-{
-	if( ledIdx>15 )
-		return;
+void setK_pinState( uint8_t led_idx, uint8_t state )
+{	
+	if( led_idx > 7 )
+		led_idx-=8;
 	
-	switch(color)
-	{
-		case LED_RED:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_RESET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_RESET );
-			}					
-		}
-		break;
-		
-		case LED_GREEN:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_RESET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_G, GPIO_PIN_RESET );
-			}					
-		}
-		break;
-		
-		case LED_BLUE:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_RESET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_RESET );
-			}					
-		}
-		break;
-		
-		case LED_YELLOW:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_RESET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S2_G, GPIO_PIN_RESET );
-			}					
-		}
-		break;
-		
-		case LED_PURPLE:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_RESET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_RESET );
-			}					
-		}
-		break;
-		
-		case LED_CYAN:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_RESET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_G, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_RESET );
-			}					
-		}
-		break;
-		
-		case LED_WHITE:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_RESET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S2_G, GPIO_PIN_RESET );
-				HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_RESET );
-			}					
-		}
-		break;
-		
-		case LED_BLACK:
-		{
-			if( ledIdx%2 == 0 )
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_SET );
-				HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_SET );
-				HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_SET );
-			}
-			else
-			{
-				HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_SET );
-				HAL_GPIO_WritePin( GPIOD, TR_S2_G, GPIO_PIN_SET );
-				HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_SET );
-			}					
-		}
-		break;
-	}
-	
-	uint8_t pin = ledIdx/2;
 	uint16_t pinK_idx;
-	if( pin==0 )
+	if( led_idx==0 )
 		pinK_idx = KLED_1;
-	else if( pin==1 )
+	else if( led_idx==1 )
 		pinK_idx = KLED_2;
-	else if( pin==2 )
+	else if( led_idx==2 )
 		pinK_idx = KLED_3;
-	else if( pin==3 )
+	else if( led_idx==3 )
 		pinK_idx = KLED_4;
-	else if( pin==4 )
+	else if( led_idx==4 )
 		pinK_idx = KLED_5;
-	else if( pin==5 )
+	else if( led_idx==5 )
 		pinK_idx = KLED_6;
-	else if( pin==6 )
+	else if( led_idx==6 )
 		pinK_idx = KLED_7;
-	else if( pin==7 )
+	else if( led_idx==7 )
 		pinK_idx = KLED_8;
-	
-	HAL_GPIO_WritePin( GPIOD, pinK_idx, GPIO_PIN_SET );	
+		
+	if(state==1)
+		HAL_GPIO_WritePin( GPIOD, pinK_idx, GPIO_PIN_SET );	
+	else
+		HAL_GPIO_WritePin( GPIOD, pinK_idx, GPIO_PIN_RESET );	
 }
 
-void on_RGB_led_timer_timeout( void )
+void setLedColor( uint8_t ledIdx, LedColor color )
 {
+	led_R_vals[ledIdx] = color.R;
+	led_G_vals[ledIdx] = color.G;
+	led_B_vals[ledIdx] = color.B;
+}
+
+#define CYC 2
+
+void on_RGB_led_timer_timeout( void )
+{		
 	// >>>>> Update RGB values if this is the first update of the cycle
 	if( led_upd_count==0 )
 	{
@@ -254,23 +153,99 @@ void on_RGB_led_timer_timeout( void )
 	}
 	// <<<<< Update RGB values if this is the first update of the cycle
 	
-	// >>>>> Decrease RGB update values
-	for( uint8_t i=0; i<MAX_LED_COUNT; i++  )
+	// >>>>> Open all transistors
+	resetRgbLeds();
+	// <<<<< Open all transistors	
+	
+	if(cycle%CYC==0) // one cycle to led transistor open correctly
 	{
-		if(upd_led_R_vals[i]!=0)
-			upd_led_R_vals[i]--;
-		
-		if(upd_led_G_vals[i]!=0)
-			upd_led_G_vals[i]--;
-		
-		if(upd_led_B_vals[i]!=0)
-			upd_led_B_vals[i]--;				
+		cycle++;
+		return;
 	}
-	// <<<<< Decrease RGB update values
 	
-	// >>>>> Update LED status
-	// <<<<< Update LED status
+	tr_idx = cycle/CYC;
 	
+	// >>>>> Decrease RGB update values		
+	switch(tr_idx)
+	{
+		case 0:			
+			HAL_GPIO_WritePin( GPIOD, TR_S1_R, GPIO_PIN_RESET );			
+			for( int i=0; i<8;i++ )
+			{
+				if(upd_led_R_vals[i]!=0)				
+				{
+					setK_pinState(i, 1 );
+					upd_led_R_vals[i]--;					
+				}
+			}			
+			break;
+			
+		case 1:
+			HAL_GPIO_WritePin( GPIOD, TR_S1_G, GPIO_PIN_RESET );
+			for( int i=0; i<8;i++ )
+			{
+				if(upd_led_G_vals[i]!=0)				
+				{
+					setK_pinState(i, 1 );
+					upd_led_G_vals[i]--;					
+				}
+			}			
+			break;
+			
+		case 2:
+			HAL_GPIO_WritePin( GPIOD, TR_S1_B, GPIO_PIN_RESET );
+			for( int i=0; i<8;i++ )
+			{
+				if(upd_led_B_vals[i]!=0)				
+				{
+					setK_pinState(i, 1 );
+					upd_led_B_vals[i]--;					
+				}
+			}			
+			break;
+
+		case 3:
+			HAL_GPIO_WritePin( GPIOD, TR_S2_R, GPIO_PIN_RESET );
+			for( int i=8; i<16;i++ )
+			{
+				if(upd_led_R_vals[i]!=0)				
+				{
+					setK_pinState(i, 1 );
+					upd_led_R_vals[i]--;					
+				}
+			}			
+			break;
+			
+		case 4:
+			HAL_GPIO_WritePin( GPIOB, TR_S2_G, GPIO_PIN_RESET );
+			for( int i=8; i<16;i++ )
+			{
+				if(upd_led_G_vals[i]!=0)				
+				{
+					setK_pinState(i, 1 );
+					upd_led_G_vals[i]--;					
+				}
+			}			
+			break;
+			
+		case 5:
+			HAL_GPIO_WritePin( GPIOD, TR_S2_B, GPIO_PIN_RESET );
+			for( int i=8; i<16;i++ )
+			{
+				if(upd_led_B_vals[i]!=0)				
+				{
+					setK_pinState(i, 1 );
+					upd_led_B_vals[i]--;					
+				}
+			}			
+			break;		
+	}		
+		
 	// Update cycle index
-	led_upd_count++;
+	cycle++;
+	if( cycle==(6*CYC) )
+	{
+		cycle = 0;
+		led_upd_count++;
+	}
 }
