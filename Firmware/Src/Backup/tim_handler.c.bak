@@ -9,3 +9,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		on_RGB_led_timer_timeout();
 	}
 }
+
+uint32_t ic_val;
+uint32_t range_mm; 
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+	ic_val = HAL_TIM_ReadCapturedValue( htim, TIM_CHANNEL_2 );	
+	range_mm = (int)((float)ic_val*0.175f+0.5f);
+}

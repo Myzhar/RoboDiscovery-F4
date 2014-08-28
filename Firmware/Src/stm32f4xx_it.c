@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.c
-  * @date    20/08/2014 19:06:51
+  * @date    28/08/2014 17:15:58
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
@@ -40,6 +40,7 @@
 
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim7;
+extern TIM_HandleTypeDef htim12;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
@@ -50,6 +51,15 @@ extern UART_HandleTypeDef huart2;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
+
+/**
+* @brief This function handles TIM8 Break interrupt and TIM12 global interrupt.
+*/
+void TIM8_BRK_TIM12_IRQHandler(void)
+{
+  HAL_NVIC_ClearPendingIRQ(TIM8_BRK_TIM12_IRQn);
+  HAL_TIM_IRQHandler(&htim12);
+}
 
 /**
 * @brief This function handles DMA2 Stream2 global interrupt.

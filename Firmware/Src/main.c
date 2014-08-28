@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 20/08/2014 19:06:51
+  * Date               : 28/08/2014 17:15:59
   * Description        : Main program body
   ******************************************************************************
   *
@@ -46,6 +46,9 @@
 /* USER CODE BEGIN 0 */
 #include "leds_handler.h"
 #include "button_handler.h"	
+#include "tim_handler.h"
+
+static uint64_t ticks=0;
 /* USER CODE END 0 */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -53,8 +56,10 @@ void SystemClock_Config(void);
 
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
 
+  /* USER CODE BEGIN 1 */
+	ticks = 0;
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -81,23 +86,25 @@ int main(void)
   MX_TIM11_Init();
   MX_TIM12_Init();
   //MX_USART1_UART_Init();
-  //MX_USART2_UART_Init();
-  //MX_USB_DEVICE_Init();
+  MX_USART2_UART_Init();
+  MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 2 */
 	volatile uint8_t led_idx = 0;
 	volatile uint8_t color_idx = 0;
-		
+	
 	volatile uint8_t but1_count = 0;
 	volatile uint8_t but2_count = 0;
 	volatile uint8_t but_disc_count = 0;
 	
-	volatile LedColor color;
-		
+	LedColor color;
+	
 	initRgbLeds();	
+	
+	HAL_TIM_IC_Start_IT( &htim12, TIM_CHANNEL_2 );
   /* USER CODE END 2 */
 
-  /* USER CODE BEGIN 3 */	
+  /* USER CODE BEGIN 3 */
 	/* Infinite loop */	
 	while (1)
 	{			
@@ -118,7 +125,7 @@ int main(void)
 		else
 			but_disc_count = 0;
 		
-		if( but1_count==3 )
+		/*if( but1_count==2 )
 		{
 			but1_count = 0;
 			
@@ -129,7 +136,7 @@ int main(void)
 			set = 1;
 		}
 		
-		if( but2_count==3 )
+		if( but2_count==2 )
 		{
 			but2_count = 0;
 			
@@ -139,48 +146,48 @@ int main(void)
 			
 			switch(color_idx)
 			{
-				case 0:
-					color.R = 0;
-					color.G = 0;
-					color.B = 0;
-					break;
-				case 1:
-					color.R = 255;
-					color.G = 0;
-					color.B = 0;
-					break;
-				case 2:
-					color.R = 0;
-					color.G = 255;
-					color.B = 0;
-					break;
-				case 3:
-					color.R = 0;
-					color.G = 0;
-					color.B = 255;
-					break;
-				case 4:
-					color.R = 0;
-					color.G = 255;
-					color.B = 255;
-					break;
-				case 5:
-					color.R = 255;
-					color.G = 255;
-					color.B = 0;
-					break;
-				case 6:
-					color.R = 255;
-					color.G = 0;
-					color.B = 255;
-					break;
-				case 7:
-					color.R = 255;
-					color.G = 255;
-					color.B = 255;
-					break;
+			case 0:
+				color.R = 0;
+				color.G = 0;
+				color.B = 0;
+				break;
+			case 1:
+				color.R = 255;
+				color.G = 0;
+				color.B = 0;
+				break;
+			case 2:
+				color.R = 0;
+				color.G = 255;
+				color.B = 0;
+				break;
+			case 3:
+				color.R = 0;
+				color.G = 0;
+				color.B = 255;
+				break;
+			case 4:
+				color.R = 0;
+				color.G = 255;
+				color.B = 255;
+				break;
+			case 5:
+				color.R = 255;
+				color.G = 255;
+				color.B = 0;
+				break;
+			case 6:
+				color.R = 255;
+				color.G = 0;
+				color.B = 255;
+				break;
+			case 7:
+				color.R = 255;
+				color.G = 255;
+				color.B = 255;
+				break;
 			}
-
+			
 			set = 1;
 		}			
 		
@@ -199,9 +206,19 @@ int main(void)
 					setLedColor( i, black );
 				}
 			}
-		}
+		}*/
 		
-		HAL_Delay(50);	
+		// MUX on output 0 for Sonar 1
+		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_10, GPIO_PIN_RESET );
+		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_9, GPIO_PIN_RESET );
+		HAL_GPIO_WritePin( GPIOA, GPIO_PIN_8, GPIO_PIN_RESET );
+		HAL_GPIO_WritePin( GPIOC, GPIO_PIN_9, GPIO_PIN_RESET );
+		HAL_GPIO_WritePin( GPIOC, GPIO_PIN_8, GPIO_PIN_RESET );
+		
+		// Trigger on Sonar Pulse
+		HAL_TIM_PWM_Start( &htim11, TIM_CHANNEL_1 );
+		
+		HAL_Delay(100);	
 	}
   /* USER CODE END 3 */
 
@@ -220,7 +237,7 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
@@ -237,17 +254,15 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 
+  HAL_RCC_EnableCSS();
+
 }
 
 /* USER CODE BEGIN 4 */
-/*	uint32_t ic_val;
-	uint32_t range_mm; 
-	void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-	{
-		ic_val = HAL_TIM_ReadCapturedValue( htim, TIM_CHANNEL_2 );	
-		range_mm = (int)((float)ic_val*0.175f+0.5f);
-		HAL_GPIO_TogglePin( GPIOD, GPIO_PIN_14 );
-	}*/
+void HAL_SYSTICK_Callback(void)
+{
+	ticks++;
+}
 
 /* USER CODE END 4 */
 

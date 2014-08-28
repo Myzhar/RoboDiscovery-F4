@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.c
-  * @date    19/07/2014 11:48:44
+  * @date    28/08/2014 16:39:57
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
@@ -40,6 +40,7 @@
 
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim7;
+extern TIM_HandleTypeDef htim12;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
@@ -94,6 +95,15 @@ void TIM7_IRQHandler(void)
 {
   HAL_NVIC_ClearPendingIRQ(TIM7_IRQn);
   HAL_TIM_IRQHandler(&htim7);
+}
+
+/**
+* @brief This function handles TIM8 Break interrupt and TIM12 global interrupt.
+*/
+void TIM8_BRK_TIM12_IRQHandler(void)
+{
+  HAL_NVIC_ClearPendingIRQ(TIM8_BRK_TIM12_IRQn);
+  HAL_TIM_IRQHandler(&htim12);
 }
 
 /**

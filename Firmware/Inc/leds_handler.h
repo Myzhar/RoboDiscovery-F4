@@ -19,8 +19,8 @@ typedef struct _led_color
 #define LED_RED			LedColor(255,0,0)
 #define LED_GREEN		LedColor(0,255,0)
 #define LED_BLUE		LedColor(0,0,255)
-#define LED_YELLOW	LedColor(255,255,0)
-#define LED_PURPLE	LedColor(255,0,255)
+#define LED_YELLOW		LedColor(255,255,0)
+#define LED_PURPLE		LedColor(255,0,255)
 #define LED_CYAN		LedColor(0,255,255)
 #define LED_WHITE		LedColor(255,255,255)
 
