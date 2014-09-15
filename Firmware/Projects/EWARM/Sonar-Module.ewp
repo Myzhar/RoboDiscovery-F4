@@ -571,7 +571,7 @@
         <option>
           <name>OOCOutputFormat</name>
           <version>2</version>
-          <state>0</state>
+          <state>2</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
@@ -579,7 +579,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>Project.srec</state>
+          <state>Sonar-Module.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -587,7 +587,7 @@
         </option>
         <option>
           <name>OOCObjCopyEnable</name>
-          <state>0</state>
+          <state>1</state>
         </option>
       </data>
     </settings>
@@ -697,7 +697,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state></state>
+          <state>$TOOLKIT_DIR$\config\linker\ST\stm32f407xG.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -952,6 +952,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\Src\main.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\Src\sonar_handler.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\Src\stm32f4xx_it.c</name>
